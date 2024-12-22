@@ -1,6 +1,12 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.paginator import Paginator
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView
+)
 from django.urls import reverse_lazy
 
 from .forms import BirthdayForm
@@ -66,26 +72,32 @@ def delete_birthday(request, pk):
 
 
 class BirthdayListView(ListView):
-    # Указываем модель, с которой работает CBV...
     model = Birthday
-    # ...сортировку, которая будет применена при выводе списка объектов:
     ordering = 'id'
-    # ...и даже настройки пагинации:
     paginate_by = 10
 
 
-class BirthdayMixin:
+class BirthdayCreateView(CreateView):
+    model = Birthday
+    form_class = BirthdayForm
+
+
+class BirthdayUpdateView(UpdateView):
+    model = Birthday
+    form_class = BirthdayForm
+
+
+class BirthdayDeleteView(DeleteView):
     model = Birthday
     success_url = reverse_lazy('birthday:list')
 
 
-class BirthdayCreateView(BirthdayMixin, CreateView):
-    form_class = BirthdayForm
+class BirthdayDetailView(DetailView):
+    model = Birthday
 
-
-class BirthdayUpdateView(BirthdayMixin, UpdateView):
-    form_class = BirthdayForm
-
-
-class BirthdayDeleteView(BirthdayMixin, DeleteView):
-    pass
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['birthday_countdown'] = calculate_birthday_countdown(
+            self.object.birthday
+        )
+        return context
