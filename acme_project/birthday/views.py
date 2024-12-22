@@ -1,4 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
+from django.core.paginator import Paginator
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.urls import reverse_lazy
 
 from .forms import BirthdayForm
 from .models import Birthday
@@ -36,10 +39,12 @@ def birthday(request, pk=None):
 
 
 def birthday_list(request):
-    # Получаем все объекты модели Birthday из БД.
-    birthdays = Birthday.objects.all()
+    birthdays = Birthday.objects.order_by('id')
+    paginator = Paginator(birthdays, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     # Передаём их в контекст шаблона.
-    context = {'birthdays': birthdays}
+    context = {'page_obj': page_obj}
     return render(request, 'birthday/birthday_list.html', context)
 
 
@@ -58,3 +63,29 @@ def delete_birthday(request, pk):
         return redirect('birthday:list')
     # Если был получен GET-запрос — отображаем форму.
     return render(request, 'birthday/birthday.html', context)
+
+
+class BirthdayListView(ListView):
+    # Указываем модель, с которой работает CBV...
+    model = Birthday
+    # ...сортировку, которая будет применена при выводе списка объектов:
+    ordering = 'id'
+    # ...и даже настройки пагинации:
+    paginate_by = 10
+
+
+class BirthdayMixin:
+    model = Birthday
+    success_url = reverse_lazy('birthday:list')
+
+
+class BirthdayCreateView(BirthdayMixin, CreateView):
+    form_class = BirthdayForm
+
+
+class BirthdayUpdateView(BirthdayMixin, UpdateView):
+    form_class = BirthdayForm
+
+
+class BirthdayDeleteView(BirthdayMixin, DeleteView):
+    pass

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% for birthday in birthdays %}
+  {% for birthday in page_obj %}
     <div class="row">
     <!-- Первая "колонка" в строке, её ширина — 2/12 -->
       <div class="col-2">  
         {% if birthday.image %}
         <!-- У объекта картинки image есть атрибут url — его и укажем в src -->
-          <img src="{{ birthday.image.url }}" height="100">
+          <img src="{{ birthday.image.url }}" height="70">
         {% endif %}
     </div>
     <div class="col-10"> <!-- Обернём каждую запись в тег div -->
@@ -23,4 +23,6 @@
       {% endif %}
     </div>
   {% endfor %}
-{% endblock %} 
+  {% include "includes/paginator.html" %}
+  
+{% endblock %}
