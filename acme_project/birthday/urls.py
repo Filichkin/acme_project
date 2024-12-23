@@ -26,4 +26,8 @@ urlpatterns = [
         views.BirthdayDeleteView.as_view(),
         name='delete'
         ),
+    path(
+        '<int:pk>/comment/',
+        views.add_comment,
+        name='add_comment'),
 ]
