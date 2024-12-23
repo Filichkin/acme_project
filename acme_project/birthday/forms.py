@@ -18,7 +18,7 @@ class BirthdayForm(forms.ModelForm):
         # Указываем модель, на основе которой должна строиться форма.
         model = Birthday
         # Указываем, что надо отобразить все поля.
-        fields = '__all__'
+        exclude = ('author',)
         widgets = {
             'birthday': forms.DateInput(attrs={'type': 'date'})
         }
@@ -39,7 +39,8 @@ class BirthdayForm(forms.ModelForm):
         if f'{first_name} {last_name}' in BEATLES:
             send_mail(
                 subject='Another Beatles member',
-                message=f'{first_name} {last_name} пытался опубликовать запись!',
+                message=f'{first_name} {last_name}'
+                        f'пытался опубликовать запись!',
                 from_email='birthday_form@acme.not',
                 recipient_list=['admin@acme.not'],
                 fail_silently=True,
