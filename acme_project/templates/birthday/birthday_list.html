@@ -15,6 +15,20 @@
         {{ birthday.first_name }} {{ birthday.last_name }} - {{ birthday.birthday }}<br>
         <a href="{% url 'birthday:detail' birthday.id %}">Сколько до дня рождения?</a>
       </div>
+
+      <div>
+        <!-- Чтобы сократить количество кода —
+          введём переменную all_tags, в которой будут лежать все теги объекта -->
+        {% with all_tags=birthday.tags.all %}
+          <!-- Если у записи есть хоть один тег -->
+          {% if all_tags %}
+            <!-- Выводим теги через запятую, самую первую букву делаем заглавной -->
+            {{ all_tags|join:", "|lower|capfirst }} 
+            <!-- Также выводим username пользователя -->
+            пользователя {{ birthday.author.username }}
+          {% endif %}
+        {% endwith %}
+      </div>
       {% if birthday.author == user %}
       <div>
         <a href="{% url 'birthday:edit' birthday.id %}">Изменить запись</a>
